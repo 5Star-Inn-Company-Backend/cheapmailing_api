@@ -1,0 +1,19 @@
+{
+  "files": {
+    "main.css": "/Emailmarketing/static/css/main.120df3c6.css",
+    "main.js": "/Emailmarketing/static/js/main.28a2a9cb.js",
+    "static/js/703.df79c729.chunk.js": "/Emailmarketing/static/js/703.df79c729.chunk.js",
+    "static/js/513.50c59faa.chunk.js": "/Emailmarketing/static/js/513.50c59faa.chunk.js",
+    "static/js/787.c4e7f8f9.chunk.js": "/Emailmarketing/static/js/787.c4e7f8f9.chunk.js",
+    "index.html": "/Emailmarketing/index.html",
+    "main.120df3c6.css.map": "/Emailmarketing/static/css/main.120df3c6.css.map",
+    "main.28a2a9cb.js.map": "/Emailmarketing/static/js/main.28a2a9cb.js.map",
+    "703.df79c729.chunk.js.map": "/Emailmarketing/static/js/703.df79c729.chunk.js.map",
+    "513.50c59faa.chunk.js.map": "/Emailmarketing/static/js/513.50c59faa.chunk.js.map",
+    "787.c4e7f8f9.chunk.js.map": "/Emailmarketing/static/js/787.c4e7f8f9.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.120df3c6.css",
+    "static/js/main.28a2a9cb.js"
+  ]
+}
