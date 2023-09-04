@@ -439,6 +439,15 @@ class EmailmarketingController extends Controller
                 'status' => 'required',
             ]);
 
+            $subscribers=Subscriber::where('tag_id', $request->tag_id)->get();
+
+            if(count($subscribers) < 1){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'The subscriber list on the recipient group is empty',
+                ]);
+            }
+
             $camp = new campaign();
             $camp->business_id = Auth::user()->business_id;
             $camp->tag_id = $request->tag_id;
@@ -458,7 +467,7 @@ class EmailmarketingController extends Controller
 
                 //Do not remove
                 $data['campaign'] = $camp->toArray();
-                $data['subscribers'] = Subscriber::where('tag_id', $camp->tag_id)->get()->toArray();
+                $data['subscribers'] = $subscribers->toArray();
 
                 CommunicationJob::dispatch($data);
 
