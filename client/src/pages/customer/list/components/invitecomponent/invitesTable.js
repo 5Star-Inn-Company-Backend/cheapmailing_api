@@ -4,6 +4,8 @@ import Spinner from "../../../../../components/spinner/spinner";
 import { GetInviteSent, collab_SliceActions } from "../../../../../store/collaborationSlice";
 import { Actions } from "./collabAction";
 import { NoData } from "../../../../../components/nodata";
+import { ViewportList } from "react-viewport-list";
+import { useRef } from "react";
 
 export const InvitesContainer =()=>{
     const collab = useSelector(
@@ -13,7 +15,7 @@ export const InvitesContainer =()=>{
     useEffect(()=>{
         dispatch(GetInviteSent(null));
     },[dispatch])
-
+    const listRef = useRef(null)
     const handleInputChange=(e)=>{
         dispatch(collab_SliceActions.searchdata({
             type:"invite",
@@ -31,7 +33,7 @@ export const InvitesContainer =()=>{
             handleInputChange={handleInputChange}
             actionName="Invite Collaborators"
         />
-        <div className="w-overflow">
+        <div className="w-overflow" ref={listRef}>
             <table className=" table table-striped table-hover table-bordered table-responsive caption-top mb-3">
                 <thead>
                     <tr>
@@ -42,8 +44,9 @@ export const InvitesContainer =()=>{
                     </tr>
                 </thead>
                 <tbody>
+                <ViewportList viewportRef={listRef} items={collab.inviteSent} margin={8}>
                     {
-                        collab.inviteSent?.map(
+                        (
                             (collaboration,index)=>{
                             const{
                                 name,
@@ -79,6 +82,7 @@ export const InvitesContainer =()=>{
                             )
                         })
                     }
+                    </ViewportList>
                 </tbody>
             </table>
         </div>

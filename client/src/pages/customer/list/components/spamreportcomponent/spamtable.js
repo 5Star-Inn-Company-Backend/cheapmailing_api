@@ -4,8 +4,11 @@ import { Actions } from "./spamaction";
 import { NoData } from "../../../../../components/nodata";
 import { DeleteSpamReport } from "../../../../../store/SpamReportedSlice";
 import { DeleteBtn } from "../../../template/components/deleteBtn";
+import { ViewportList } from "react-viewport-list";
+import { useRef } from "react";
 
 export const SpamContainer = () => {
+    const listRef = useRef(null)
     const spam = useSelector(
         state => state.SpamReported
     )
@@ -15,7 +18,7 @@ export const SpamContainer = () => {
     return (
         <>
             <Actions/>
-            <div className="w-overflow">
+            <div className="w-overflow" ref={listRef}>
                 <table className=" table table-striped table-hover table-bordered table-responsive caption-top mb-3">
                     <thead>
                         <tr>
@@ -27,9 +30,8 @@ export const SpamContainer = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {
-                            spam
-                                .SpamReported?.map((spam, index) => {
+                        <ViewportList viewportRef={listRef} items={spam.SpamReported} margin={8}>
+                        {((spam, index) => {
                                     const {
                                         email,
                                         updated_at,
@@ -73,7 +75,7 @@ export const SpamContainer = () => {
                                 }
                                 )
                         }
-
+                        </ViewportList>
                     </tbody>
                 </table>
             </div>

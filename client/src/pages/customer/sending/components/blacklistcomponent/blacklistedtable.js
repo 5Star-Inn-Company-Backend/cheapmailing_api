@@ -5,8 +5,11 @@ import { DeleteBlacklist, GetBlacklist } from "../../../../../store/BlacklistedS
 import { Actions } from "./blacklistaction";
 import { NoData } from "../../../../../components/nodata";
 import { DeleteBtn } from "../../../template/components/deleteBtn";
+import { ViewportList } from "react-viewport-list";
+import { useRef } from "react";
 
 export const BlacklistTable =()=>{
+    const listRef = useRef(null)
     const blacklist = useSelector(
         state => state.blacklist
     )
@@ -21,7 +24,7 @@ export const BlacklistTable =()=>{
     return(
         <>
         <Actions/>
-        <div className="w-overflow">
+        <div className="w-overflow" ref={listRef}>
             <table className=" table table-striped table-hover table-bordered table-responsive caption-top mb-3">
                 <thead>
                     <tr>
@@ -32,8 +35,9 @@ export const BlacklistTable =()=>{
                     </tr>
                 </thead>
                 <tbody>
+                <ViewportList viewportRef={listRef} items={ blacklist.blacklist} margin={8}>
                     {
-                        blacklist.blacklist?.map((list,index)=>{
+                        ((list,index)=>{
                                 const{
                                     email,
                                     id,
@@ -72,7 +76,7 @@ export const BlacklistTable =()=>{
                             }
                         )
                     }
-                    
+                    </ViewportList>
                 </tbody>
             </table>
         </div>

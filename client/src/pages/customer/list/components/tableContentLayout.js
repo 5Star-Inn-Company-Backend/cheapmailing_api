@@ -29,7 +29,7 @@ export const Tablelayout=({
                     )
                 }
             </div>
-            <div className="pdx-4">
+            <div className="pdx-4 w-overflow">
                 {tableContainer}
             </div>
             <Modal

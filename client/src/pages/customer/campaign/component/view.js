@@ -7,6 +7,7 @@ import { Modal } from "../../../../components/modal/modal";
 import { useRef } from "react";
 import { CreateTag } from "../../list/components/tagcomponent/tagsmodalcontent";
 import { DeleteBtn } from "../../template/components/deleteBtn";
+import { ViewportList } from "react-viewport-list";
 
 export const AllcampaignView =()=>{
     const navigate = useNavigate();
@@ -14,6 +15,7 @@ export const AllcampaignView =()=>{
     const campaign = useSelector(
         state => state.campaign
     )
+    const listRef = useRef(null)
     const dispatch = useDispatch()
 
     return(
@@ -21,7 +23,7 @@ export const AllcampaignView =()=>{
         <Actions
             actionName="Create Campaign"
         />
-        <div>
+        <div className="w-overflow" ref={listRef}>
             <table className=" table table-striped table-hover table-bordered table-responsive mb-3 w-overflow">
                 <thead>
                     <tr>
@@ -34,9 +36,9 @@ export const AllcampaignView =()=>{
                     </tr>
                 </thead>
                 <tbody> 
+                <ViewportList viewportRef={listRef} items={ campaign.Campaigns} margin={8}>
                     {
-                        campaign
-                        .Campaigns?.map((camp,index)=>{
+                        ((camp,index)=>{
                             const{
                                 id,
                                 title,
@@ -86,6 +88,7 @@ export const AllcampaignView =()=>{
                             )
                         })
                         }
+                        </ViewportList>
                     </tbody>
                 </table>
                 {

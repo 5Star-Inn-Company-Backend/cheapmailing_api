@@ -6,6 +6,7 @@ import { Actions } from "./unsubaction";
 import { NoData } from "../../../../../components/nodata";
 import { DeleteUnSubscribers } from "../../../../../store/UnsubscribeSlice";
 import { DeleteBtn } from "../../../template/components/deleteBtn";
+import { ViewportList } from "react-viewport-list";
 
 export const UnSubContainer =()=>{
     
@@ -26,7 +27,7 @@ export const UnSubContainer =()=>{
             <div 
                 ref={printRef}
                 className="w-overflow px-1 py-3">
-                <table className="table table-striped table-hover table-bordered table-responsive caption-top mb-3">
+                <table className="table table-striped table-hover table-bordered table-responsive caption-top mb-3 w-overflow">
                     <thead>
                         <tr>
                             <th scope="col">#</th>
@@ -46,9 +47,9 @@ export const UnSubContainer =()=>{
                         </tr>
                     </thead>
                     <tbody>
+                        <ViewportList viewportRef={printRef} items={unsub?.unsubscribers} margin={8}>
                         {
-                            unsub
-                                .unsubscribers?.map((sub,index)=>{
+                           ((sub,index)=>{
                                     const{
                                         email,
                                         id,
@@ -108,10 +109,10 @@ export const UnSubContainer =()=>{
                                     )
                                 })
                         }
+                        </ViewportList>
                     </tbody>
                 </table>
             </div>
-                 
                  {
                     unsub
                     .unsubscribers?.length === 0 &&(

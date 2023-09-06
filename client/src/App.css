@@ -357,7 +357,7 @@ i.mdi.mdi-account {
 }
 .w-overflow{
   width:100%;
-  overflow-x: auto;
+  overflow: auto;
 }
 .find{
   font-weight: 600;

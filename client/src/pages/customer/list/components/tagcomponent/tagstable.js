@@ -5,9 +5,12 @@ import Spinner from "../../../../../components/spinner/spinner";
 import { DeleteTags, Tag_SliceActions } from "../../../../../store/tagSlice";
 import { NoData } from "../../../../../components/nodata";
 import { DeleteBtn } from "../../../template/components/deleteBtn";
+import { ViewportList } from "react-viewport-list";
+import { useRef } from "react";
 
 export const TagContainer =()=>{
     const navigate = useNavigate()
+    const listRef = useRef(null)
     const dispatch = useDispatch()
     const tag = useSelector(
         state => state.tag
@@ -36,7 +39,7 @@ export const TagContainer =()=>{
             handleChange={handleSelectChange}
             handleInputChange={handleInputChange}
         />
-        <div className="w-overflow">
+        <div className="w-overflow" ref={listRef}>
             <table className=" table table-striped table-hover table-bordered table-responsive caption-top mb-3">
                 <thead>
                     <tr>
@@ -48,9 +51,9 @@ export const TagContainer =()=>{
                     </tr>
                 </thead>
                 <tbody>
+                <ViewportList viewportRef={listRef} items={tag.Tags} margin={8}>
                     {
-                        tag
-                            .Tags?.map((tag,index)=>{
+                        ((tag,index)=>{
                                 const{
                                     name,
                                     updated_at,
@@ -101,7 +104,7 @@ export const TagContainer =()=>{
                             }
                         )
                     }
-                    
+                    </ViewportList> 
                 </tbody>
             </table>
         </div>

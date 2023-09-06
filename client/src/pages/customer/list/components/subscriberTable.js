@@ -4,7 +4,8 @@ import { Actions } from "./subAction";
 import { NoData } from "../../../../components/nodata";
 import { DeleteSubscriber } from "../../../../store/subscriberSlice";
 import { DeleteBtn } from "../../template/components/deleteBtn";
-
+import { ViewportList } from "react-viewport-list";
+import { useRef } from "react";
 export const SubscriberTable=({
     content,
     setModalBody,
@@ -14,7 +15,7 @@ export const SubscriberTable=({
         const subsriber = useSelector(
             state => state.subscriber
         )
-
+        const listRef = useRef(null)
         if(subsriber.GetSubscribersStatus ==='pending'){
             return <Spinner/>
         }
@@ -26,7 +27,7 @@ export const SubscriberTable=({
                 setCreateType={setCreateType}
                 hidemodal={hidemodal}
             />
-            <div className="w-overflow">
+            <div className="w-overflow" ref={listRef}>
                 <table className="table table-striped table-hover table-bordered table-responsive caption-top mb-3">
                     <thead>
                         <tr>
@@ -42,8 +43,9 @@ export const SubscriberTable=({
                         </tr>
                     </thead>
                     <tbody>
+                    <ViewportList viewportRef={listRef} items={content?.subscribers} margin={8}>
                         {
-                             content?.subscribers?.map((sub,index)=>{
+                             ((sub,index)=>{
                                     const{
                                         email,
                                         fname,
@@ -85,6 +87,7 @@ export const SubscriberTable=({
                                     )
                                 })
                         }
+                        </ViewportList>
                     </tbody>
                 </table>
             </div>

@@ -5,11 +5,14 @@ import Spinner from "../../../../../components/spinner/spinner";
 import { GetInviteForCollaborations, collab_SliceActions } from "../../../../../store/collaborationSlice";
 import { Actions } from "../invitecomponent/collabAction";
 import { NoData } from "../../../../../components/nodata";
+import { ViewportList } from "react-viewport-list";
+import { useRef } from "react";
 
 export const CollabContainer =()=>{
     const collab = useSelector(
         state => state.collab
     )
+    const listRef = useRef(null)
     const dispatch = useDispatch();
     useEffect(()=>{
         dispatch(GetInviteForCollaborations(null));
@@ -31,7 +34,7 @@ export const CollabContainer =()=>{
         <Actions
             handleInputChange={handleInputChange}
         />
-        <div className="w-overflow">
+        <div className="w-overflow" ref={listRef}>
             <table className=" table table-striped table-hover table-bordered table-responsive caption-top mb-3">
                 <thead>
                     <tr>
@@ -42,8 +45,9 @@ export const CollabContainer =()=>{
                     </tr>
                 </thead>
                 <tbody>
+                <ViewportList viewportRef={listRef} items={collab.inviteForCollaborations} margin={8}>
                     {
-                        collab.inviteForCollaborations?.map(
+                        (
                             (collaboration,index)=>{
                             const{
                                 name,
@@ -92,6 +96,7 @@ export const CollabContainer =()=>{
                             )
                         })
                     }
+                    </ViewportList>
                 </tbody>
             </table>
         </div>
