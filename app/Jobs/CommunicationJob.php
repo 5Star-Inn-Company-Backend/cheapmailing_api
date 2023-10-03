@@ -34,7 +34,7 @@ class CommunicationJob implements ShouldQueue
         return [
             'host' => config('mail.mailers.smtp.host'),
             'port' => config('mail.mailers.smtp.port'),
-            'username' => 'mail.mailers.smtp.username',
+            'username' => config('mail.mailers.smtp.username'),
             'password' => config('mail.mailers.smtp.password'),
             'encrypt' => config('mail.mailers.smtp.encryption')
         ];
