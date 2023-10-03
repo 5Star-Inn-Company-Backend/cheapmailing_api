@@ -177,6 +177,7 @@ const unsubscriber_Slice = createSlice({
                     return{
                         ...state,
                         unsubscribers: message,
+                        unsubscribersToFilter:message,
                         GetUnSubscribersStatus:"success"
                     }
                 }return{

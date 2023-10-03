@@ -469,6 +469,8 @@ class EmailmarketingController extends Controller
                 $data['campaign'] = $camp->toArray();
                 $data['subscribers'] = $subscribers->toArray();
 
+                // dd($data);
+
                 CommunicationJob::dispatch($data);
 
                 //do not remove ends

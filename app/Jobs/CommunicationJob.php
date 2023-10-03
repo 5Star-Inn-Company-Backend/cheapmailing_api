@@ -14,14 +14,30 @@ class CommunicationJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private $campaign;
+    private $smtp;
+    
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($campaign)
+    public function __construct($campaign, $smtp = null)
     {
-        $this->campaign =$campaign;
+        $this->campaign = $campaign;
+        $this->smtp = $this->sendSmtp();
+    }
+
+
+    public function sendSmtp()
+    {
+        // Read SMTP settings from .env
+        return [
+            'host' => config('mail.mailers.smtp.host'),
+            'port' => config('mail.mailers.smtp.port'),
+            'username' => 'mail.mailers.smtp.username',
+            'password' => config('mail.mailers.smtp.password'),
+            'encrypt' => config('mail.mailers.smtp.encryption')
+        ];
     }
 
     /**
