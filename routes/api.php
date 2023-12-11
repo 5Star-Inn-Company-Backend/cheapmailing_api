@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\EmailmarketingController;
 
 /*
@@ -23,7 +24,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('dashboard/', function () {
     return view('dashboard');
 });
-Route::post('bulksubscribe', [EmailmarketingController::class, 'bulksubscribe'])->name('bulksubscribe');
+
 
 // Route::get('addtag', function () {
 //     return view('emailmarketing.addtags');
@@ -102,6 +103,7 @@ Route::group(['middleware' => 'auth:sanctum'], function (){
        Route::get('viewuserinfo/{id}', [EmailmarketingController::class, 'viewuserinfo'])->name('viewuserinfo');
        Route::get('viewprofile/{id}', [EmailmarketingController::class, 'viewprofile'])->name('viewprofile');
 
+       Route::post('aimessage', [MessageController::class, 'aimessage'])->name('aimessage');
 
 });
 
