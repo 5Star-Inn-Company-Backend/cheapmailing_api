@@ -39,7 +39,9 @@ class MessageController extends Controller
         $responseData = json_decode($response, true);
     
         // Return a JSON response in Laravel
-        return response()->json(['status' => 'success', 'data' => $responseData]);
+        return response()->json([
+            $responseData
+        ]);
     }
     
 }
