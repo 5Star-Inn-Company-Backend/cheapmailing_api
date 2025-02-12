@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PasswordReset;
 use App\Models\business;
 use App\Models\password_reset;
 use App\Models\User;
@@ -72,39 +73,44 @@ class UserController extends Controller
     public function forgetpassword(Request $request)
     {
         try {
-            $user = User::where('email', $request->email)->get();
+            $user = User::where('email', $request->email)->first();
 
-            if (count($user) > 0) {
-                $token = Str::random(40);
-                $domain = URL::to('/');
-                $url = $domain . '/resetpass?token=' . $token;
+            if ($user) {
+                $token = Str::random(30);
+//                $domain = URL::to('/');
+//                $url = $domain . '/resetpass?token=' . $token;
+//
+//                $data['url'] = $url;
+//                $data['email'] = $request->email;
+//                $data['title'] = 'Password Reset';
+//                $data['body'] = 'Please click on below link to Reset your password!';
+//
+//                Mail::send('resetpassmail', ['data' => $data], function ($message) use ($data) {
+//                    $message->to($data['email'])->subject($data['title']);
+//
+//                });
+//
+//                $datetime = Carbon::now()->format('Y-m-d H:i:s');
+//
+//                password_reset::updateOrCreate(
+//                    ['email' => $request->email],
+//
+//                    [
+//                        'email' => $request->email,
+//                        'token' => $token,
+//                        'created_at' => $datetime,
+//
+//                    ]
+//                );
 
-                $data['url'] = $url;
-                $data['email'] = $request->email;
-                $data['title'] = 'Password Reset';
-                $data['body'] = 'Please click on below link to Reset your password!';
+                $user->password=Hash::make($token);
+                $user->save();
 
-                Mail::send('resetpassmail', ['data' => $data], function ($message) use ($data) {
-                    $message->to($data['email'])->subject($data['title']);
-
-                });
-
-                $datetime = Carbon::now()->format('Y-m-d H:i:s');
-
-                password_reset::updateOrCreate(
-                    ['email' => $request->email],
-
-                    [
-                        'email' => $request->email,
-                        'token' => $token,
-                        'created_at' => $datetime,
-
-                    ]
-                );
+                Mail::to($user->email)->send(new PasswordReset($token));
 
                 return response()->json([
                     'status' => true,
-                    'message' => 'Please check your mail to Resent your Password!',
+                    'message' => 'A temporary password has been sent to your mail',
                 ]);
             } else {
 
