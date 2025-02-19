@@ -12,4 +12,8 @@ class tags extends Model
     function user(){
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    function subscribers(){
+        return $this->hasMany(subscriber::class, 'tag_id');
+    }
 }

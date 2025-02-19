@@ -52,6 +52,7 @@ Route::group(['middleware' => 'auth:sanctum'], function (){
     Route::post('addsubscrib', [EmailmarketingController::class, 'addsubscrib'])->name('addsubscrib');
     // Route::post('createsubscriber', [EmailmarketingController::class, 'createsubscriber'])->name('createsubscriber');
     Route::get('viewtags', [EmailmarketingController::class, 'viewtags'])->name('viewtags');
+    Route::get('view-groups', [EmailmarketingController::class, 'viewGroups'])->name('viewgroups');
     Route::get('edittags/{id}', [EmailmarketingController::class, 'edittags'])->name('edittags');
     Route::put('updatetags/{id}', [EmailmarketingController::class, 'updatetags'])->name('updatetags');
     Route::get('viewsubscrib', [EmailmarketingController::class, 'viewsubscribers'])->name('viewsubscrib');

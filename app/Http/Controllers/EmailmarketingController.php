@@ -293,7 +293,23 @@ class EmailmarketingController extends Controller
     public function viewtags()
     {
         if (Auth::check()) {
-            $tag = tags::where('business_id', auth::user()->business_id)->with("user")->get();
+            $tag = tags::where('business_id', auth::user()->business_id)->get();
+            return response()->json([
+                'status' => true,
+                'message' => $tag,
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized',
+            ]);
+        }
+    }
+
+    public function viewGroups()
+    {
+        if (Auth::check()) {
+            $tag = tags::where('business_id', auth::user()->business_id)->with("subscribers")->get();
             return response()->json([
                 'status' => true,
                 'message' => $tag,
@@ -430,65 +446,70 @@ class EmailmarketingController extends Controller
 
         // dd($camp);
 
-        if (Auth::check()) {
-            $request->validate([
-                'tag_id' => 'required',
-                'content' => 'required',
-                'content_type' => 'required',
-                'schedule_date' => 'required',
-                'status' => 'required',
+        $validator = Validator::make($request->all(), [
+            'tag_id' => 'required|array',
+            'content' => 'required',
+            'content_type' => 'required',
+            'schedule_date' => 'required',
+            'status' => 'required',
+            'title' => 'required',
+            'reply_to' => 'required',
+            'from_name' => 'required',
+            'from_email' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => false, 'message' => implode(",", $validator->errors()->all()), 'error' => $validator->errors()]);
+        }
+
+        $subscribers=[];
+
+        foreach ($request->tag_id as $tagie){
+
+            $subscribert=Subscriber::where([['tag_id', $tagie], ['status',1], ['business_id',Auth::user()->business_id]])->get()->toArray();
+
+            if(count($subscribert) < 1){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'One of the subscriber list on the recipient group is empty. Remove it and try again',
+                ]);
+            }
+
+            $subscribers=array_merge($subscribers,$subscribert);
+
+        }
+
+        $camp = new campaign();
+        $camp->business_id = Auth::user()->business_id;
+        $camp->tag_id = implode(",",$request->tag_id);
+        $camp->title = $request->title;
+        $camp->reply_to = $request->reply_to;
+        $camp->from_name = $request->from_name;
+        $camp->from_email = $request->from_email;
+        $camp->subject = $request->subject;
+        $camp->content = $request->content;
+        $camp->content_type = $request->content_type;
+        $camp->schedule_date = $request->schedule_date;
+        $camp->status = $request->status;
+
+        $camp->save();
+        if ($camp->save()) {
+
+            //Do not remove
+//            $data['campaign'] = $camp->toArray();
+//            $data['subscribers'] = $subscribers;
+//            CommunicationJob::dispatch($data);
+
+            //do not remove ends
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Campaign created Successfully!',
             ]);
-
-            $subscribers=Subscriber::where('tag_id', $request->tag_id)->get();
-
-            if(count($subscribers) < 1){
-                return response()->json([
-                    'status' => false,
-                    'message' => 'The subscriber list on the recipient group is empty',
-                ]);
-            }
-
-            $camp = new campaign();
-            $camp->business_id = Auth::user()->business_id;
-            $camp->tag_id = $request->tag_id;
-            $camp->title = $request->title;
-            // $camp->receipient = $request->receipient;
-            $camp->reply_to = $request->reply_to;
-            $camp->from_name = $request->from_name;
-            $camp->from_email = $request->from_email;
-            $camp->subject = $request->subject;
-            $camp->content = $request->content;
-            $camp->content_type = $request->content_type;
-            $camp->schedule_date = $request->schedule_date;
-            $camp->status = $request->status;
-
-            $camp->save();
-            if ($camp->save()) {
-
-                //Do not remove
-                $data['campaign'] = $camp->toArray();
-                $data['subscribers'] = $subscribers->toArray();
-
-                // dd($data);
-
-                CommunicationJob::dispatch($data);
-
-                //do not remove ends
-
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Campaign created Successfully!',
-                ]);
-            } else {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Unable to create campaign',
-                ]);
-            }
         } else {
             return response()->json([
                 'status' => false,
-                'message' => 'Unauthorized',
+                'message' => 'Unable to create campaign',
             ]);
         }
     }
