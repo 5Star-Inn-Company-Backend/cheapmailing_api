@@ -72,49 +72,45 @@ class UserController extends Controller
 
     public function forgetpassword(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => implode(",", $validator->errors()->all()),
+                'errors' => $validator->errors(),
+            ], 400);
+        }
+
         try {
             $user = User::where('email', $request->email)->first();
 
             if ($user) {
-                $token = Str::random(30);
-//                $domain = URL::to('/');
-//                $url = $domain . '/resetpass?token=' . $token;
-//
-//                $data['url'] = $url;
-//                $data['email'] = $request->email;
-//                $data['title'] = 'Password Reset';
-//                $data['body'] = 'Please click on below link to Reset your password!';
-//
-//                Mail::send('resetpassmail', ['data' => $data], function ($message) use ($data) {
-//                    $message->to($data['email'])->subject($data['title']);
-//
-//                });
-//
-//                $datetime = Carbon::now()->format('Y-m-d H:i:s');
-//
-//                password_reset::updateOrCreate(
-//                    ['email' => $request->email],
-//
-//                    [
-//                        'email' => $request->email,
-//                        'token' => $token,
-//                        'created_at' => $datetime,
-//
-//                    ]
-//                );
+                $token = strtoupper(Str::random(6));
+                $domain = URL::to('/');
+                $url = $domain . '/resetpass?token=' . $token;
 
-                $user->password=Hash::make($token);
-                $user->save();
+                $datetime = Carbon::now()->format('Y-m-d H:i:s');
+
+                password_reset::updateOrCreate(
+                    ['email' => $request->email],
+                    [
+                        'email' => $request->email,
+                        'token' => $token,
+                        'created_at' => $datetime,
+
+                    ]
+                );
 
                 Mail::to($user->email)->send(new PasswordReset($token));
 
                 return response()->json([
                     'status' => true,
-                    'message' => 'A temporary password has been sent to your mail',
+                    'message' => 'A 6 Digits code has been sent to your email.',
                 ]);
             } else {
-
-
                 return response()->json([
                     'status' => false,
                     'message' => 'User not Found!',
@@ -127,6 +123,60 @@ class UserController extends Controller
                 'message' => $e->getMessage(),
             ]);
         }
+
+    }
+
+
+    public function updatepass(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'code' => 'required|string|min:6',
+            'password' => 'required|string|min:6',
+            'confirm_pass' => 'required|same:password',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => implode(",", $validator->errors()->all()),
+                'errors' => $validator->errors(),
+            ], 400);
+        }
+
+        $user = User::where('email',$request->email)->first();
+
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'User not Found!',
+            ]);
+        }
+
+        $pr=password_reset::where(
+            [
+                'email' => $request->email,
+                'token' => $request->code,
+            ]
+        )->first();
+
+
+        if (!$pr) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Invalid Code. Check your mail and try again!',
+            ]);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+        password_reset::where('email', $user->email)->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Password reset successfully',
+        ]);
 
     }
 
@@ -177,26 +227,6 @@ class UserController extends Controller
         } else {
             return 'No token provided';
         }
-    }
-
-    public function updatepass(Request $request)
-    {
-        $request->validate([
-            'password' => 'required|string|min:6',
-            'confirm_pass' => 'required|same:password',
-        ]);
-
-        $user = User::where('email',$request->email)->first();
-        // dd($request->email);
-        if($user)
-        {
-            $user->update([
-                'password' => Hash::make($request->password),
-            ]);
-            password_reset::where('email', $user->email)->delete();
-        }
-        return "<h1>Your Password Reset was Successful!</h1>";
-
     }
 
     public function changepass(Request $request)

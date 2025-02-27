@@ -1,15 +1,13 @@
 <x-mail::message>
 # Hi there,
 
-Someone recently requested to reset your account password
+Your confirmation code is below — enter it in your open browser window and we'll help you change your password.
 
 <x-mail::panel>
-    Temporary Password: {{$code}}
+     {{$code}}
 </x-mail::panel>
 
-<x-mail::button :url="$url" color="success">
-LOGIN
-</x-mail::button>
+    If you didn’t request this email, there’s nothing to worry about — you can safely ignore it.
 
 Thanks,<br>
 {{ config('app.name') }}
