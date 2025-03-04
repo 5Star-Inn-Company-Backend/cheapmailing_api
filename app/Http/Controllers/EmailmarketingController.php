@@ -538,11 +538,22 @@ class EmailmarketingController extends Controller
                 'email' => 'required',
             ]);
 
+            $pass=rand();
+
+            $fu=User::where('email',$request->email)->first();
+
+            if($fu){
+                return response()->json([
+                    'status' => false,
+                    'message' => "An account already exist for this user",
+                ]);
+            }
+
             $user = new User();
             $user->name = $request->name;
             $user->email = $request->email;
             $user->business_id = Auth::user()->business_id;
-            $user->password = Hash::make($request->email);
+            $user->password = $pass;
             $user->save();
 
             $invited = new inviteduser();
@@ -557,14 +568,14 @@ class EmailmarketingController extends Controller
                     'content' => 'You have been Invited to collaborate with a friend in our workspace by' . ' ' . Auth::user()->name . ' '
                         . 'login to your account using the following details',
                     'email' => $request->email,
-                    'password' => $request->email,
-                    'dashboard-link' => redirect('dashboard' . Auth::user()->business_id),
+                    'password' => $pass,
+                    'dashboard-link' => env('FONTEND_URL','https://cheapmailing.dev.5starcompany.com.ng/dashboard'),
                 ];
 
                 Mail::to($request->email)->send(new sendemails($mailData));
                 return response()->json([
                     'status' => true,
-                    'message' => 'You have Successfully Invited' . ' ' . $request->email . ' ' . 'To your account and we have sent them an email notifying Them of your invitation!!',
+                    'message' => 'You have Successfully Invited' . ' ' . $request->email . ' to your account and we have sent an email notifying them of your invitation!!',
                 ]);
             }
         } else {
