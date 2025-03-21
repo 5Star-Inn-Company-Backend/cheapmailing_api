@@ -9,13 +9,13 @@ class MessageController extends Controller
     public function aimessage(Request $request)
     {
         $curl = curl_init();
-    
+
         $message = [
-            "message" => $request->message
+            "message" => $request->message." give me best 5 varieties"
         ];
-    
+
         $encodemessage = json_encode($message);
-    
+
         curl_setopt_array($curl, array(
             CURLOPT_URL => 'http://resources.5starcompany.com.ng/api/aibot',
             CURLOPT_RETURNTRANSFER => true,
@@ -30,18 +30,18 @@ class MessageController extends Controller
                 'Content-Type: application/json'
             ),
         ));
-    
+
         $response = curl_exec($curl);
-    
+
         curl_close($curl);
-    
+
         // Decode the JSON response
         $responseData = json_decode($response, true);
-    
+
         // Return a JSON response in Laravel
         return response()->json([
             $responseData
         ]);
     }
-    
+
 }
