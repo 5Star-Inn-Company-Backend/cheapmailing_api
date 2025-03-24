@@ -13,11 +13,13 @@ use App\Models\subscriber;
 use App\Models\audithtrail;
 use App\Models\Blacklisted;
 use App\Models\inviteduser;
+use App\Notifications\UserNotification;
 use Illuminate\Http\Request;
 use App\Jobs\CommunicationJob;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 
 class EmailmarketingController extends Controller
@@ -495,6 +497,9 @@ class EmailmarketingController extends Controller
         $camp->save();
         if ($camp->save()) {
 
+
+            Notification::send(Auth::user(), new UserNotification("Email Campaign", "Your campaign ".$request->title." has been processed successfully", "View Campaign|".env('FONTEND_URL','https://cheapmailing.dev.5starcompany.com.ng/dashboard')."/campaigns/".$camp->id,"" ));
+
             //Do not remove
 //            $data['campaign'] = $camp->toArray();
 //            $data['subscribers'] = $subscribers;
@@ -571,6 +576,10 @@ class EmailmarketingController extends Controller
                     'password' => $pass,
                     'dashboard-link' => env('FONTEND_URL','https://cheapmailing.dev.5starcompany.com.ng/dashboard'),
                 ];
+
+
+                Notification::send(Auth::user(), new UserNotification("Invite Collaborator", $invited->name . " has been invited successfully.", "","" ));
+
 
                 Mail::to($request->email)->send(new sendemails($mailData));
                 return response()->json([
@@ -1248,118 +1257,6 @@ class EmailmarketingController extends Controller
         }
      }
 
-     public function updateuserinfo(Request $request, $id)
-     {
-         $userinfo = User::where('id',$id)->where('id', Auth::user()->id)->first();
-         if(!$userinfo){
-            return response()->json([
-                'status' => false,
-                'message' => 'Id not found!',
-            ]);
-        }
-        $userinfo->email = $request->email;
-        $userinfo->company = $request->company;
-        $userinfo->phone = $request->phone;
-        $userinfo->zip_code = $request->zip_code;
-        $userinfo->state = $request->state;
-        $userinfo->city = $request->city;
-        $userinfo->address1 = $request->address1;
-        $userinfo->address2 = $request->address2;
-        $userinfo->country = $request->country;
-
-        if($userinfo->update()){
-            return response()->json([
-                'status' => true,
-                'message' => 'User info updated successfully!',
-            ]);
-        }else{
-            return response()->json([
-                'status' => false,
-                'message' => 'Unable to update user Info!',
-            ]);
-        }
-
-     }
-
-    public function updateprofile(Request $request, $id)
-    {
-        // Validate the input data
-        $validator = Validator::make($request->all(), [
-            'profile' => 'required|image|max:2048',
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => $validator->errors()->first(),
-            ]);
-        }
-
-        // Get the authenticated user
-        $user = User::where('id', $id)->where('id', Auth::user()->id)->first();
-        if (!$user) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Id not found!',
-            ]);
-        }
-
-        // Delete the old profile picture if it exists
-        if ($user->profile && file_exists(public_path('uploads/profile/' . $user->profile))) {
-            unlink(public_path('uploads/profile/' . $user->profile));
-        }
-
-        // Upload the new profile picture
-        if ($request->hasFile('profile')) {
-            $image = $request->file('profile');
-            $name = time() . '.' . $image->getClientOriginalExtension();
-            $destinationPath = public_path('uploads/profile/');
-            $image->move($destinationPath, $name);
-
-            // Update the user's profile picture in the database
-            $user->profile = $name;
-            $user->save();
-
-            // Return a success response
-            return response()->json([
-                'status' => true,
-                'message' => 'Profile picture updated successfully.',
-                'data' => [
-                    'profile' => $user->profile,
-                    'profilepath' => asset('uploads/profile/' . $name)
-                ],
-            ]);
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => 'No file uploaded.',
-            ]);
-        }
-    }
-
-     public function viewuserinfo($id)
-     {
-        if (Auth::check()) {
-            $viewauser = User::where('id', $id)->where('business_id', Auth::user()->business_id)->get();
-            if (!$viewauser) {
-                return response()->json([
-                    'status' => true,
-                    'message' => 'User details not found',
-                ]);
-            }
-            if($viewauser){
-                return response()->json([
-                    'status' => true,
-                    'message' => $viewauser,
-                ]);
-            }
-
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => 'Unauthorized',
-            ]);
-        }
-     }
 
      public function viewprofile($id)
      {

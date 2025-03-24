@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -99,12 +101,18 @@ Route::group(['middleware' => 'auth:sanctum'], function (){
        Route::delete('deletecamp/{id}', [EmailmarketingController::class, 'deletecamp'])->name('deletecamp');
        Route::delete('deletetempl/{id}', [EmailmarketingController::class, 'deletetempl'])->name('deletetempl');
        //for updates
-       Route::any('updateuserinfo/{id}', [EmailmarketingController::class, 'updateuserinfo'])->name('updateuserinfo');
-       Route::any('updateprofile/{id}', [EmailmarketingController::class, 'updateprofile'])->name('updateprofile');
-       Route::get('viewuserinfo/{id}', [EmailmarketingController::class, 'viewuserinfo'])->name('viewuserinfo');
+       Route::put('update-user-info', [AccountController::class, 'updateuserinfo'])->name('updateuserinfo');
+       Route::post('upload-profile-pix', [AccountController::class, 'updateprofile'])->name('updateprofile');
+       Route::get('viewuserinfo', [AccountController::class, 'viewuserinfo'])->name('viewuserinfo');
        Route::get('viewprofile/{id}', [EmailmarketingController::class, 'viewprofile'])->name('viewprofile');
 
        Route::post('aimessage', [MessageController::class, 'aimessage'])->name('aimessage');
+
+       Route::get('all-notification', [NotificationController::class, 'allNotification']);
+       Route::get('unread-notification', [NotificationController::class, 'unreadonly']);
+       Route::patch('mark-as-read-notifications', [NotificationController::class, 'markAsRead']);
+
+       Route::get('pricing', [\App\Http\Controllers\PaymentController::class, 'plans']);
 
 });
 
