@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -113,6 +114,9 @@ Route::group(['middleware' => 'auth:sanctum'], function (){
        Route::patch('mark-as-read-notifications', [NotificationController::class, 'markAsRead']);
 
        Route::get('pricing', [\App\Http\Controllers\PaymentController::class, 'plans']);
+
+       Route::get('dashboard/main', [DashboardController::class, 'main']);
+       Route::get('dashboard/subscriber-growth', [DashboardController::class, 'subscriberGrowth']);
 
 });
 
