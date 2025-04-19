@@ -9,14 +9,16 @@ class subscriber extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'email',
-        'fname',
-        'lname',
-        'country',
-        'state',
-        'phone',
-        'dob',
-        'tag',
+    protected $guarded = [];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'metadata' => 'array',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 }

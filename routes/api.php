@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\SubscriberController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -58,8 +59,11 @@ Route::group(['middleware' => 'auth:sanctum'], function (){
     Route::get('view-groups', [EmailmarketingController::class, 'viewGroups'])->name('viewgroups');
     Route::get('edittags/{id}', [EmailmarketingController::class, 'edittags'])->name('edittags');
     Route::put('updatetags/{id}', [EmailmarketingController::class, 'updatetags'])->name('updatetags');
+
     Route::get('viewsubscrib', [EmailmarketingController::class, 'viewsubscribers'])->name('viewsubscrib');
     Route::get('unsubscribe', [EmailmarketingController::class, 'viewunsubscribers'])->name('unsubscribe');
+    Route::post('subscribers/bulk-upload', [SubscriberController::class, 'bulkUpload']);
+
     Route::post('createcampaigns', [emailmarketingController::class, 'createcampaigns'])->name('createcampaigns');
     Route::get('viewcamps', [emailmarketingController::class, 'viewcamps'])->name('viewcamps');
     Route::post('inviteusers', [EmailmarketingController::class, 'inviteusers'])->name('inviteusers');
