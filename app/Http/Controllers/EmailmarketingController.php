@@ -377,28 +377,6 @@ class EmailmarketingController extends Controller
         // }
     }
 
-    public function viewsubscribers()
-    {
-        if (Auth::check()) {
-            $subscrib = subscriber::where('business_id', Auth::user()->business_id)->where('status', 1)->get();
-            if ($subscrib) {
-                return response()->json([
-                    'status' => true,
-                    'message' => $subscrib,
-                ]);
-            } else {
-                return response()->json([
-                    'status' => true,
-                    'message' => 'No body has subscribe from your website',
-                ]);
-            }
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => 'Unauthorized',
-            ]);
-        }
-    }
 
     public function totalsubscriber()
     {
@@ -408,29 +386,6 @@ class EmailmarketingController extends Controller
                 'status' => true,
                 'message' => $totalsubscrib,
             ]);
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => 'Unauthorized',
-            ]);
-        }
-    }
-
-    public function viewunsubscribers()
-    {
-        if (Auth::check()) {
-            $subscrib = subscriber::where('business_id', Auth::user()->business_id)->where('status', 0)->get();
-            if ($subscrib) {
-                return response()->json([
-                    'status' => true,
-                    'message' => $subscrib,
-                ]);
-            } else {
-                return response()->json([
-                    'status' => true,
-                    'message' => 'No body has unsubscribe from your website',
-                ]);
-            }
         } else {
             return response()->json([
                 'status' => false,
@@ -686,61 +641,6 @@ class EmailmarketingController extends Controller
                 return response()->json([
                     'status' => true,
                     'message' => 'You have not reported the email for spam',
-                ]);
-            }
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => 'Unauthorized',
-            ]);
-        }
-    }
-
-    public function blasklisted(Request $request)
-    {
-        if (Auth::check()) {
-            $request->validate([
-                'email' => 'required',
-            ]);
-
-            $blacklisted = new Blacklisted();
-
-            $blacklisted->business_id = Auth::user()->business_id;
-            $blacklisted->email = $request->email;
-
-            $blacklisted->save();
-            if ($blacklisted->save()) {
-                return response()->json([
-                    'status' => true,
-                    'message' => 'You have Successully Blacklisted this email!',
-                ]);
-            } else {
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Unable to Blacklist this email!',
-                ]);
-            }
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => 'Unauthorized',
-            ]);
-        }
-    }
-
-    public function viewblacklisted()
-    {
-        if (Auth::check()) {
-            $viewblacklist = Blacklisted::where('business_id', Auth::user()->business_id)->latest()->get();
-            if ($viewblacklist) {
-                return response()->json([
-                    'status' => true,
-                    'message' => $viewblacklist,
-                ]);
-            } else {
-                return response()->json([
-                    'status' => true,
-                    'message' => 'You have not blacklisted any email',
                 ]);
             }
         } else {
@@ -1103,31 +1003,9 @@ class EmailmarketingController extends Controller
         }
      }
 
-     public function deletesubscribe($id){
-        $subscrib = subscriber::find($id);
-        if(!$subscrib){
-            return response()->json([
-                'status' => false,
-                'message' => 'Id not found!',
-            ]);
-        }
-        if($subscrib->delete()){
-            return response()->json([
-                'status' => true,
-                'message' => 'Subscriber deleted successfully!',
-            ]);
-        }else{
-            return response()->json([
-                'status' => false,
-                'message' => 'unable to delete Subscriber!',
-            ]);
-        }
-
-     }
-
      public function deletetags($id)
      {
-        $tag = tags::where('id',$id)->where('business_id', Auth::user()->business_id);
+        $tag = tags::where('id',$id)->where('business_id', Auth::user()->business_id)->first();
         if(!$tag){
             return response()->json([
                 'status' => false,

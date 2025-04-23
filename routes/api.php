@@ -52,27 +52,34 @@ Route::post('updatepassword', [UserController::class, 'updatepass']);
 
 Route::group(['middleware' => 'auth:sanctum'], function (){
     Route::post('changepassword', [UserController::class, 'changepass']);
-    Route::post('createtags', [EmailmarketingController::class, 'createtags'])->name('createtags');
     Route::post('addsubscrib', [EmailmarketingController::class, 'addsubscrib'])->name('addsubscrib');
     // Route::post('createsubscriber', [EmailmarketingController::class, 'createsubscriber'])->name('createsubscriber');
+
+    Route::post('createtags', [EmailmarketingController::class, 'createtags'])->name('createtags');
     Route::get('viewtags', [EmailmarketingController::class, 'viewtags'])->name('viewtags');
     Route::get('view-groups', [EmailmarketingController::class, 'viewGroups'])->name('viewgroups');
     Route::get('edittags/{id}', [EmailmarketingController::class, 'edittags'])->name('edittags');
     Route::put('updatetags/{id}', [EmailmarketingController::class, 'updatetags'])->name('updatetags');
+    Route::delete('deletetags/{id}', [EmailmarketingController::class, 'deletetags'])->name('deletetags');
 
-    Route::get('viewsubscrib', [EmailmarketingController::class, 'viewsubscribers'])->name('viewsubscrib');
-    Route::get('unsubscribe', [EmailmarketingController::class, 'viewunsubscribers'])->name('unsubscribe');
+    Route::get('viewsubscrib', [SubscriberController::class, 'viewsubscribers'])->name('viewsubscrib');
+    Route::get('unsubscribe', [SubscriberController::class, 'viewunsubscribers'])->name('unsubscribe');
     Route::post('subscribers/bulk-upload', [SubscriberController::class, 'bulkUpload']);
+    Route::delete('deletesubscribe/{id}', [SubscriberController::class, 'deleteSubscriber']);
+
+    Route::post('blasklisted', [SubscriberController::class, 'blasklisted'])->name('blasklisted');
+    Route::get('viewblacklisted', [SubscriberController::class, 'viewblacklisted'])->name('viewblacklisted');
 
     Route::post('createcampaigns', [emailmarketingController::class, 'createcampaigns'])->name('createcampaigns');
     Route::get('viewcamps', [emailmarketingController::class, 'viewcamps'])->name('viewcamps');
+    Route::delete('deletecamp/{id}', [EmailmarketingController::class, 'deletecamp'])->name('deletecamp');
+
     Route::post('inviteusers', [EmailmarketingController::class, 'inviteusers'])->name('inviteusers');
     Route::get('collaborations', [EmailmarketingController::class, 'collaborations'])->name('collaborations');
     Route::get('collaborators', [EmailmarketingController::class, 'collaborator'])->name('collaborators');
     Route::post('create_spamreport', [EmailmarketingController::class, 'create_spamreport'])->name('create_spamreport');
     Route::get('list_spamreport', [EmailmarketingController::class, 'list_spamreport'])->name('list_spamreport');
-    Route::post('blasklisted', [EmailmarketingController::class, 'blasklisted'])->name('blasklisted');
-    Route::get('viewblacklisted', [EmailmarketingController::class, 'viewblacklisted'])->name('viewblacklisted');
+
     Route::get('totalsubscriber', [EmailmarketingController::class, 'totalsubscriber'])->name('totalsubscriber');
     // for activities log
     Route::post('addactivitylog', [EmailmarketingController::class, 'addactivitylog'])->name('addactivitylog');
@@ -98,12 +105,10 @@ Route::group(['middleware' => 'auth:sanctum'], function (){
        //for tags under blacklist
        Route::get('tagblacklist', [EmailmarketingController::class, 'tagblacklist'])->name('tagblacklist');
        //route for delete
-       Route::delete('deletesubscribe/{id}', [EmailmarketingController::class, 'deletesubscribe'])->name('deletesubscribe');
-       Route::delete('deletetags/{id}', [EmailmarketingController::class, 'deletetags'])->name('deletetags');
+
        Route::delete('deleteblacklist/{id}',[EmailmarketingController::class, 'deleteblacklist'])->name('deleteblacklist');
        Route::delete('deletespam/{id}', [EmailmarketingController::class, 'deletespam'])->name('deletespam');
        Route::delete('deleteunsubscribe/{id}', [EmailmarketingController::class, 'deleteunsubscribe'])->name('deleteunsubscribe');
-       Route::delete('deletecamp/{id}', [EmailmarketingController::class, 'deletecamp'])->name('deletecamp');
        Route::delete('deletetempl/{id}', [EmailmarketingController::class, 'deletetempl'])->name('deletetempl');
        //for updates
        Route::put('update-user-info', [AccountController::class, 'updateuserinfo'])->name('updateuserinfo');

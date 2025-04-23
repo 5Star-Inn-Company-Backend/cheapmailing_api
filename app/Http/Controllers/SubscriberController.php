@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Blacklisted;
 use App\Models\subscriber;
 use App\Models\tags;
 use Illuminate\Http\Request;
@@ -167,4 +168,97 @@ class SubscriberController extends Controller
             ], 500);
         }
     }
+
+    public function viewsubscribers()
+    {
+        $subscrib = subscriber::where('business_id', Auth::user()->business_id)->where('status', 1)->with('groups')->latest()->get();
+        return response()->json([
+            'status' => true,
+            'message' => $subscrib,
+        ]);
+    }
+
+
+    public function deleteSubscriber($id){
+        $subscrib = subscriber::where([['id',$id],['business_id', Auth::user()->business_id]])->first();
+        if(!$subscrib){
+            return response()->json([
+                'status' => false,
+                'message' => 'Id not found!',
+            ]);
+        }
+        if($subscrib->delete()){
+            return response()->json([
+                'status' => true,
+                'message' => 'Subscriber deleted successfully!',
+            ]);
+        }else{
+            return response()->json([
+                'status' => false,
+                'message' => 'unable to delete Subscriber!',
+            ]);
+        }
+
+    }
+
+
+    public function blasklisted(Request $request)
+    {
+
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'email' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $subscrib = subscriber::where([['email',$request->email],['business_id', Auth::user()->business_id]])->first();
+        if(!$subscrib){
+            return response()->json([
+                'status' => false,
+                'message' => 'Email not found!',
+            ]);
+        }
+
+        $subscrib->status = 2;
+
+        if ($subscrib->save()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'You have Successfully Blacklisted this email!',
+            ]);
+        } else {
+            return response()->json([
+                'status' => true,
+                'message' => 'Unable to Blacklist this email!',
+            ]);
+        }
+    }
+
+    public function viewblacklisted()
+    {
+        $viewblacklist = subscriber::where([['business_id', Auth::user()->business_id], ['status',2]])->with('groups')->latest()->get();
+        return response()->json([
+            'status' => true,
+            'message' => $viewblacklist,
+        ]);
+    }
+
+
+    public function viewunsubscribers()
+    {
+        $subscrib = subscriber::where('business_id', Auth::user()->business_id)->where('status', 0)->with('groups')->latest()->get();
+        return response()->json([
+            'status' => true,
+            'message' => $subscrib,
+        ]);
+    }
+
+
 }
