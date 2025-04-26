@@ -116,6 +116,9 @@ Route::group(['middleware' => 'auth:sanctum'], function (){
        Route::get('viewuserinfo', [AccountController::class, 'viewuserinfo'])->name('viewuserinfo');
        Route::get('viewprofile/{id}', [EmailmarketingController::class, 'viewprofile'])->name('viewprofile');
 
+       Route::get('business-token', [AccountController::class, 'businessToken']);
+       Route::post('business-token', [AccountController::class, 'businessTokenCreate']);
+
        Route::post('aimessage', [MessageController::class, 'aimessage'])->name('aimessage');
 
        Route::get('all-notification', [NotificationController::class, 'allNotification']);

@@ -57,7 +57,7 @@ class UserController extends Controller
         }
 
         $user = $request->user();
-        $tokenresult = $user->createToken('Personal Access Token');
+        $tokenresult = $user->createToken('dashboard');
         $token = $tokenresult->plainTextToken;
         $expires_at = Carbon::now()->addweeks(1);
 

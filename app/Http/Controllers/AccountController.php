@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\business;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -124,6 +125,33 @@ class AccountController extends Controller
             ]);
         }
 
+    }
+
+    public function businessToken(Request $request)
+    {
+        $biz=business::find(Auth::user()->business_id);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Token fetched successfully!',
+            'data' => $biz->api_key
+        ]);
+    }
+
+    public function businessTokenCreate(Request $request)
+    {
+
+        $biz=business::find(Auth::user()->business_id);
+
+
+        $biz->api_key="CH_".md5(uniqid().time());
+        $biz->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Token generated successfully!',
+            'data' => $biz->api_key
+        ]);
     }
 
 
