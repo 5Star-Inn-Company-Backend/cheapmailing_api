@@ -22,49 +22,16 @@ use App\Http\Controllers\EmailmarketingController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::group(['prefix' => 's2s', 'middleware' => 'auth:api'], function (){
 
-Route::get('dashboard/', function () {
-    return view('dashboard');
-});
-
-
-// Route::get('addtag', function () {
-//     return view('emailmarketing.addtags');
-// });
-
-// Route::get('adduser', function () {
-//     return view('emailmarketing.adduser');
-// });
-
-// Route::get('addcamp', function () {
-//     return view('emailmarketing.createcampaign');
-// });
-
-Route::post('forgetpas', [UserController::class, 'forgetpassword']);
-Route::post('registering', [UserController::class, 'register']);
-Route::post('login', [UserController::class, 'login']);
-Route::get('resetpass', [UserController::class, 'resetpass']);
-Route::post('updatepassword', [UserController::class, 'updatepass']);
-// Route::get('viewtags', [EmailmarketingController::class, 'viewtags'])->name('viewtags');
-
-
-Route::group(['middleware' => 'auth:sanctum'], function (){
-    Route::post('changepassword', [UserController::class, 'changepass']);
-
-    // Route::post('createsubscriber', [EmailmarketingController::class, 'createsubscriber'])->name('createsubscriber');
-
-    Route::post('createtags', [TagsController::class, 'createtags'])->name('createtags');
-    Route::get('viewtags', [TagsController::class, 'viewtags'])->name('viewtags');
-    Route::get('view-groups', [TagsController::class, 'viewGroups'])->name('viewgroups');
+    Route::post('create-tags', [TagsController::class, 'createtags'])->name('createtags');
+    Route::get('view-tags', [TagsController::class, 'viewtags'])->name('viewtags');
     Route::get('edittags/{id}', [TagsController::class, 'edittags'])->name('edittags');
     Route::put('updatetags/{id}', [TagsController::class, 'updatetags'])->name('updatetags');
     Route::delete('deletetags/{id}', [TagsController::class, 'deletetags'])->name('deletetags');
 
-    Route::post('addsubscrib', [SubscriberController::class, 'addsubscrib'])->name('addsubscrib');
-    Route::get('viewsubscrib', [SubscriberController::class, 'viewsubscribers'])->name('viewsubscrib');
+    Route::post('add-subscriber', [SubscriberController::class, 'addsubscrib'])->name('addsubscrib');
+    Route::get('view-subscribers', [SubscriberController::class, 'viewsubscribers'])->name('viewsubscrib');
     Route::get('unsubscribe', [SubscriberController::class, 'viewunsubscribers'])->name('unsubscribe');
     Route::post('subscribers/bulk-upload', [SubscriberController::class, 'bulkUpload']);
     Route::delete('deletesubscribe/{id}', [SubscriberController::class, 'deleteSubscriber']);
@@ -72,14 +39,9 @@ Route::group(['middleware' => 'auth:sanctum'], function (){
     Route::post('blasklisted', [SubscriberController::class, 'blasklisted'])->name('blasklisted');
     Route::get('viewblacklisted', [SubscriberController::class, 'viewblacklisted'])->name('viewblacklisted');
 
-    Route::post('createcampaigns', [emailmarketingController::class, 'createcampaigns'])->name('createcampaigns');
-    Route::get('viewcamps', [emailmarketingController::class, 'viewcamps'])->name('viewcamps');
-    Route::delete('deletecamp/{id}', [EmailmarketingController::class, 'deletecamp'])->name('deletecamp');
+    Route::post('create-campaigns', [emailmarketingController::class, 'createcampaigns']);
+    Route::get('view-campaigns', [emailmarketingController::class, 'viewcamps'])->name('viewcamps');
 
-    Route::post('inviteusers', [EmailmarketingController::class, 'inviteusers'])->name('inviteusers');
-    Route::get('collaborations', [EmailmarketingController::class, 'collaborations'])->name('collaborations');
-    Route::get('collaborators', [EmailmarketingController::class, 'collaborator'])->name('collaborators');
-    Route::post('create_spamreport', [EmailmarketingController::class, 'create_spamreport'])->name('create_spamreport');
     Route::get('list_spamreport', [EmailmarketingController::class, 'list_spamreport'])->name('list_spamreport');
 
     Route::get('totalsubscriber', [EmailmarketingController::class, 'totalsubscriber'])->name('totalsubscriber');
@@ -118,11 +80,6 @@ Route::group(['middleware' => 'auth:sanctum'], function (){
        Route::get('viewuserinfo', [AccountController::class, 'viewuserinfo'])->name('viewuserinfo');
        Route::get('viewprofile/{id}', [EmailmarketingController::class, 'viewprofile'])->name('viewprofile');
 
-       Route::get('business-token', [AccountController::class, 'businessToken']);
-       Route::post('business-token', [AccountController::class, 'businessTokenCreate']);
-
-       Route::post('aimessage', [MessageController::class, 'aimessage'])->name('aimessage');
-
        Route::get('all-notification', [NotificationController::class, 'allNotification']);
        Route::get('unread-notification', [NotificationController::class, 'unreadonly']);
        Route::patch('mark-as-read-notifications', [NotificationController::class, 'markAsRead']);
@@ -134,5 +91,3 @@ Route::group(['middleware' => 'auth:sanctum'], function (){
 
 });
 
-
-require 's2s.php';

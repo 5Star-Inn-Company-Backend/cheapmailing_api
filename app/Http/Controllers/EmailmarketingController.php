@@ -205,179 +205,6 @@ class EmailmarketingController extends Controller
     //     }
     // }
 
-    //for apis
-    public function createtags(Request $request)
-    {
-        // if (Auth::check()) {
-        $request->validate([
-            'name' => 'required',
-        ]);
-
-        $tag = new tags();
-        $tag->business_id = Auth::user()->business_id;
-        $tag->name = $request->name;
-        $tag->user_id = Auth::user()->id;
-        $tag->save();
-        if ($tag->save()) {
-            return response()->json([
-                'status' => true,
-                'message' => 'Tag has been created successfully!',
-
-            ]);
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => 'Unable to create tag',
-
-            ]);
-        }
-        // }else{
-        //     return response()->json([
-        //         'status' => false,
-        //         'message' => 'Unauthorized',
-        //     ]);
-        // }
-    }
-
-    public function edittags($id)
-    {
-        if (Auth::check()) {
-
-            $edit = tags::find($id);
-            return response()->json([
-                'status' => true,
-                'message' => $edit,
-
-            ]);
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => 'Unable to create tag',
-
-            ]);
-        }
-    }
-
-    public function updatetags(Request $request, $id)
-    {
-        if (Auth::check()) {
-            $updatetags = tags::find($id);
-            if (tags::where('business_id', Auth::user()->business_id)) {
-                $updatetags->name = $request->name;
-                $updatetags->update();
-
-                if ($updatetags->update()) {
-                    return response()->json([
-                        'status' => true,
-                        'message' => 'You successfully updated your tag',
-                    ]);
-                } else {
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'Unable to update your tag',
-                    ]);
-                }
-            } else {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'You are not authorizr to carry out this action',
-                ]);
-            }
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => 'Unable to create tag',
-
-            ]);
-        }
-    }
-
-    public function viewtags()
-    {
-        if (Auth::check()) {
-            $tag = tags::where('business_id', auth::user()->business_id)->get();
-            return response()->json([
-                'status' => true,
-                'message' => $tag,
-            ]);
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => 'Unauthorized',
-            ]);
-        }
-    }
-
-    public function viewGroups()
-    {
-        if (Auth::check()) {
-            $tag = tags::where('business_id', auth::user()->business_id)->with("subscribers")->get();
-            return response()->json([
-                'status' => true,
-                'message' => $tag,
-            ]);
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => 'Unauthorized',
-            ]);
-        }
-    }
-
-    public function addsubscrib(Request $request)
-    {
-        // if(Auth::check()){
-        $request->validate([
-            'email' => 'required',
-            'fname' => ['required'],
-            'lname' => ['required'],
-            'country' => ['required'],
-            'state' => ['required'],
-            'phone' => ['required'],
-            'dob' => ['required'],
-            'tag' => ['required'],
-        ]);
-        $duplicate = subscriber::where('email', $request->email)->where('phone', $request->phone)->exists();
-
-        $subscrib = new subscriber();
-        $subscrib->business_id = Auth::user()->business_id;
-        $subscrib->email = $request->email;
-        $subscrib->fname = $request->fname;
-        $subscrib->lname = $request->lname;
-        $subscrib->country = $request->country;
-        $subscrib->state = $request->state;
-        $subscrib->phone = $request->phone;
-        $subscrib->dob = $request->dob;
-        $subscrib->tag_id = $request->tag;
-        if ($duplicate) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Email or phone number already exist',
-            ]);
-        } else {
-            $subscrib->save();
-            if ($subscrib->save()) {
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Subscriber created successfully',
-                ]);
-            } else {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Unable to create Subscriber',
-                ]);
-            }
-        }
-
-        // }else{
-        //     return response()->json([
-        //         'status' => false,
-        //         'message' => 'Unauthorized',
-        //     ]);
-        // }
-    }
-
-
     public function totalsubscriber()
     {
         if (Auth::check()) {
@@ -421,9 +248,13 @@ class EmailmarketingController extends Controller
 
         $subscribers=[];
 
+        $user=Auth::user();
+        $biz_id=isset($user->api_token) ? $user->id : $user-> business_id;
+
+
         foreach ($request->tag_id as $tagie){
 
-            $subscribert=Subscriber::where([['tag_id', $tagie], ['status',1], ['business_id',Auth::user()->business_id]])->get()->toArray();
+            $subscribert=Subscriber::where([['tag_id', $tagie], ['status',1], ['business_id',$biz_id]])->get()->toArray();
 
             if(count($subscribert) < 1){
                 return response()->json([
@@ -437,7 +268,7 @@ class EmailmarketingController extends Controller
         }
 
         $camp = new campaign();
-        $camp->business_id = Auth::user()->business_id;
+        $camp->business_id = $biz_id;
         $camp->tag_id = implode(",",$request->tag_id);
         $camp->title = $request->title;
         $camp->reply_to = $request->reply_to;
@@ -476,8 +307,11 @@ class EmailmarketingController extends Controller
 
     public function viewcamps()
     {
+        $user=Auth::user();
+        $biz_id=isset($user->api_token) ? $user->id : $user-> business_id;
+
         if (Auth::check()) {
-            $camp = campaign::where('business_id', auth::user()->business_id)->get();
+            $camp = campaign::where('business_id', $biz_id)->get();
             return response()->json([
                 'status' => true,
                 'message' => $camp,

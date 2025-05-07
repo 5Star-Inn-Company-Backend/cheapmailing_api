@@ -69,12 +69,22 @@ class AccountController extends Controller
 
     public function viewuserinfo()
     {
-        $data=User::where('id',Auth::id())->with('business')->get();
-        return response()->json([
-            'status' => true,
-            'message' => "Fetched successfully",
-            'data' => $data
-        ]);
+        $user=Auth::user();
+
+        if(!$user->api_token) {
+            $data = User::where('id', Auth::id())->with('business')->get();
+            return response()->json([
+                'status' => true,
+                'message' => "Fetched successfully",
+                'data' => $data
+            ]);
+        }else{
+            return response()->json([
+                'status' => true,
+                'message' => "Fetched successfully",
+                'data' => $user
+            ]);
+        }
     }
 
     public function updateuserinfo(Request $request)

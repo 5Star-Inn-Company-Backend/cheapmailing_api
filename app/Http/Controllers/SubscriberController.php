@@ -28,7 +28,11 @@ class SubscriberController extends Controller
             ], 422);
         }
 
-        $tag=tags::where([['business_id', Auth::user()->business_id], ['id',$request->tag_id]])->first();
+        $user=Auth::user();
+        $biz_id=isset($user->api_token) ? $user->id : $user-> business_id;
+
+
+        $tag=tags::where([['business_id', $biz_id], ['id',$request->tag_id]])->first();
         if(!$tag){
             return response()->json([
                 'success' => false,
@@ -137,7 +141,7 @@ class SubscriberController extends Controller
                     if (isset($subscriberData['email']) && !empty($subscriberData['email'])) {
                         subscriber::updateOrCreate(
                             ['email' => $subscriberData['email'],
-                                'business_id' => Auth::user()->business_id,
+                                'business_id' => $biz_id,
                                 'tag_id' => $request->tag_id
                                 ],
                                 $subscriberData
@@ -169,9 +173,73 @@ class SubscriberController extends Controller
         }
     }
 
+    public function addsubscrib(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'email' => 'required',
+            'fname' => ['required'],
+            'lname' => ['required'],
+            'country' => ['required'],
+            'state' => ['required'],
+            'phone' => ['required'],
+            'dob' => ['required'],
+            'tag' => ['required'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user=Auth::user();
+        $biz_id=isset($user->api_token) ? $user->id : $user-> business_id;
+
+        $duplicate = subscriber::where('email', $request->email)->where('phone', $request->phone)->where('business_id',$biz_id)->exists();
+
+        if ($duplicate) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Email or phone number already exist',
+            ]);
+        }
+
+        $subscrib = new subscriber();
+        $subscrib->business_id = $biz_id;
+        $subscrib->email = $request->email;
+        $subscrib->fname = $request->fname;
+        $subscrib->lname = $request->lname;
+        $subscrib->country = $request->country;
+        $subscrib->state = $request->state;
+        $subscrib->phone = $request->phone;
+        $subscrib->dob = $request->dob;
+        $subscrib->tag_id = $request->tag;
+
+        if ($subscrib->save()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Subscriber created successfully',
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unable to create Subscriber',
+            ]);
+        }
+    }
+
     public function viewsubscribers()
     {
-        $subscrib = subscriber::where('business_id', Auth::user()->business_id)->where('status', 1)->with('groups')->latest()->get();
+        if(isset(Auth::user()->api_token)){
+            $subscrib = subscriber::where('business_id', Auth::user()->id)->where('status', 1)->with('groups')->latest()->get();
+
+        }else{
+            $subscrib = subscriber::where('business_id', Auth::user()->business_id)->where('status', 1)->with('groups')->latest()->get();
+        }
+
         return response()->json([
             'status' => true,
             'message' => $subscrib,
@@ -180,7 +248,11 @@ class SubscriberController extends Controller
 
 
     public function deleteSubscriber($id){
-        $subscrib = subscriber::where([['id',$id],['business_id', Auth::user()->business_id]])->first();
+
+        $user=Auth::user();
+        $biz_id=isset($user->api_token) ? $user->id : $user-> business_id;
+
+        $subscrib = subscriber::where([['id',$id],['business_id', $biz_id]])->first();
         if(!$subscrib){
             return response()->json([
                 'status' => false,
@@ -218,7 +290,10 @@ class SubscriberController extends Controller
             ], 422);
         }
 
-        $subscrib = subscriber::where([['email',$request->email],['business_id', Auth::user()->business_id]])->first();
+        $user=Auth::user();
+        $biz_id=isset($user->api_token) ? $user->id : $user-> business_id;
+
+        $subscrib = subscriber::where([['email',$request->email],['business_id', $biz_id]])->first();
         if(!$subscrib){
             return response()->json([
                 'status' => false,
@@ -243,7 +318,11 @@ class SubscriberController extends Controller
 
     public function viewblacklisted()
     {
-        $viewblacklist = subscriber::where([['business_id', Auth::user()->business_id], ['status',2]])->with('groups')->latest()->get();
+
+        $user=Auth::user();
+        $biz_id=isset($user->api_token) ? $user->id : $user-> business_id;
+
+        $viewblacklist = subscriber::where([['business_id', $biz_id], ['status',2]])->with('groups')->latest()->get();
         return response()->json([
             'status' => true,
             'message' => $viewblacklist,
@@ -253,7 +332,11 @@ class SubscriberController extends Controller
 
     public function viewunsubscribers()
     {
-        $subscrib = subscriber::where('business_id', Auth::user()->business_id)->where('status', 0)->with('groups')->latest()->get();
+
+        $user=Auth::user();
+        $biz_id=isset($user->api_token) ? $user->id : $user-> business_id;
+
+        $subscrib = subscriber::where('business_id', $biz_id)->where('status', 0)->with('groups')->latest()->get();
         return response()->json([
             'status' => true,
             'message' => $subscrib,
