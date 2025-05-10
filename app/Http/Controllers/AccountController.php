@@ -47,7 +47,7 @@ class AccountController extends Controller
             $image->move($destinationPath, $name);
 
             // Update the user's profile picture in the database
-            $user->profile = $name;
+            $user->profile = asset('uploads/profile/' . $name);
             $user->save();
 
             // Return a success response
