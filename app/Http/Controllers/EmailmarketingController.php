@@ -287,9 +287,9 @@ class EmailmarketingController extends Controller
             Notification::send(Auth::user(), new UserNotification("Email Campaign", "Your campaign ".$request->title." has been processed successfully", "View Campaign|".env('FONTEND_URL','https://cheapmailing.dev.5starcompany.com.ng/dashboard')."/campaigns/".$camp->id,"" ));
 
             //Do not remove
-//            $data['campaign'] = $camp->toArray();
-//            $data['subscribers'] = $subscribers;
-//            CommunicationJob::dispatch($data);
+            $data['campaign'] = $camp->toArray();
+            $data['subscribers'] = $subscribers;
+            CommunicationJob::dispatch($data);
 
             //do not remove ends
 
