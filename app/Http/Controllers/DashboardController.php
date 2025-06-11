@@ -31,7 +31,7 @@ class DashboardController extends Controller
             $startDate = $currentDate->copy()->startOfMonth();
             $endDate = $currentDate->copy()->endOfMonth();
 
-            $subscriberCount = Subscriber::whereBetween('created_at', [$startDate, $endDate])->count();
+            $subscriberCount = Subscriber::where('business_id', Auth::user()->business_id)->whereBetween('created_at', [$startDate, $endDate])->count();
 
             $growthData[] = ['key' => $startDate->format('m/Y'), 'value' => $subscriberCount];
 
