@@ -245,7 +245,7 @@ class SubscriberController extends Controller
             $subscrib = subscriber::where('business_id', Auth::user()->id)->where('status', 1)->with('groups')->latest()->get();
 
         }else{
-            $subscrib = subscriber::where('business_id', Auth::user()->business_id)->where('status', 1)->with('groups')->latest()->get();
+            $subscrib = subscriber::where('business_id', Auth::user()->business_id)->where('status', 1)->with('groups')->latest()->paginate(30);
         }
 
         return response()->json([
