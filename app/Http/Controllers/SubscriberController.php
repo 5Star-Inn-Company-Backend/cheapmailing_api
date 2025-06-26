@@ -23,7 +23,7 @@ class SubscriberController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation failed',
+                'message' => implode(",",$validator->errors()->all()),
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -46,6 +46,14 @@ class SubscriberController extends Controller
             $file = $request->file('csv_file');
             $path = $file->getRealPath();
             $data = array_map('str_getcsv', file($path));
+
+
+            if(count($data) > 1001){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Maximum number of records exceeded. The maximum rows is 1,000. Kindly remove some and re-upload'
+                ], 500);
+            }
 
             // Extract headers from first row
             $headers = array_map('strtolower', $data[0]);
