@@ -140,4 +140,27 @@ class TagsController extends Controller
         }
     }
 
+    public function deletetags($id)
+    {
+        $tag = tags::where('id',$id)->where('business_id', Auth::user()->business_id)->first();
+        if(!$tag){
+            return response()->json([
+                'status' => false,
+                'message' => 'Id not found!',
+            ]);
+        }
+        if($tag->delete()){
+            return response()->json([
+                'status' => true,
+                'message' => 'Tag deleted successfully!',
+            ]);
+        }else{
+            return response()->json([
+                'status' => false,
+                'message' => 'Unable to delete tag!',
+            ]);
+        }
+    }
+
+
 }

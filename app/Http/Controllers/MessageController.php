@@ -11,13 +11,13 @@ class MessageController extends Controller
         $curl = curl_init();
 
         $message = [
-            "message" => $request->message." give me best 5 varieties"
+            "message" => $request->message
         ];
 
         $encodemessage = json_encode($message);
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'http://resources.5starcompany.com.ng/api/aibot',
+            CURLOPT_URL => 'https://resources.5starcompany.com.ng/api/aibot',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -25,6 +25,8 @@ class MessageController extends Controller
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false,
             CURLOPT_POSTFIELDS => $encodemessage,
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json'
