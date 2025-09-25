@@ -74,6 +74,7 @@ Route::group(['middleware' => 'auth:sanctum'], function (){
 
     Route::post('createcampaigns', [emailmarketingController::class, 'createcampaigns'])->name('createcampaigns');
     Route::get('viewcamps', [emailmarketingController::class, 'viewcamps'])->name('viewcamps');
+    Route::get('campstats/{id}', [emailmarketingController::class, 'campstats'])->name('campstats');
     Route::delete('deletecamp/{id}', [EmailmarketingController::class, 'deletecamp'])->name('deletecamp');
 
     Route::post('inviteusers', [EmailmarketingController::class, 'inviteusers'])->name('inviteusers');

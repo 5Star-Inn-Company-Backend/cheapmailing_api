@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CampaignSubscriber;
 use App\Models\tags;
 use App\Models\User;
 use App\Models\country;
@@ -322,6 +323,53 @@ class EmailmarketingController extends Controller
                 'message' => 'Unauthorized',
             ]);
         }
+    }
+
+    public function campstats($id)
+    {
+        $user=Auth::user();
+        $biz_id=isset($user->api_token) ? $user->id : $user-> business_id;
+
+        $camp = campaign::where([['business_id', $biz_id], ['id',$id]])->first();
+
+        if(!$camp){
+            return response()->json([
+                'status' => true,
+                'message' => "Invalid ID supplied",
+            ]);
+        }
+        $campSub = CampaignSubscriber::where('campaign_id', $id)
+            ->select('mail_sent_at', 'opened_at')
+            ->get();
+
+        $totalEmailsSent = $campSub->count();
+//        $totalEmailsDelivered = $campSub->whereNotNull('opened_at')->count();
+        $opened = $campSub->whereNotNull('opened_at')->count();
+
+        $campSub = CampaignSubscriber::where('campaign_id', $id)
+            ->selectRaw('DATE(mail_sent_at) as date, COUNT(*) as opens, SUM(IF(opened_at IS NOT NULL, 1, 0)) as clicks')
+            ->groupBy(\DB::raw('DATE(mail_sent_at)'))
+            ->get();
+
+        $opensAndClicksByHour = CampaignSubscriber::where('campaign_id', $id)
+            ->selectRaw('HOUR(mail_sent_at) as hour, COUNT(*) as opens, SUM(IF(opened_at IS NOT NULL, 1, 0)) as clicks')
+            ->groupBy(\DB::raw('HOUR(mail_sent_at)'))
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'email' => $camp->content,
+            'totalEmailsSent' => $totalEmailsSent,
+            'totalEmailsDelivered' => $totalEmailsSent,
+            'opened' => $opened,
+            'clicked' => 0,
+            'hard_bounced' => 0,
+            'soft_bounced' => 0,
+            'unsubscribed' => 0,
+            'spam_report' => 0,
+            'opensAndClicksByDay' => $campSub,
+            'opensAndClicksByHour' => $opensAndClicksByHour
+        ]);
     }
 
     public function inviteusers(Request $request)
